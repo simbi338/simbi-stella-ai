@@ -101,24 +101,72 @@
     </div>
 
     <script>
-        function sendMessage() {
-            let input = document.getElementById("userInput");
-            let messages = document.getElementById("messages");
+        
+async function sendMessage() {
+    let input = document.getElementById("userInput");
+    let messages = document.getElementById("messages");
 
-            if (input.value.trim() === "") {
-                return;
+    let message = input.value.trim();
+
+    if (message === "") {
+        return;
+    }
+
+    // Display user's message
+    let userMessage = document.createElement("div");
+    userMessage.className = "message";
+    userMessage.innerText = "You: " + message;
+
+    messages.appendChild(userMessage);
+
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+
+    // Show loading message
+    let loading = document.createElement("div");
+    loading.className = "message";
+    loading.innerText = "Simbi Stella AI is thinking...";
+
+    messages.appendChild(loading);
+
+    try {
+        // Connect to Render backend
+        const response = await fetch(
+            "https://simbi-stella-ai-backend.onrender.com/chat",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: message
+                })
             }
+        );
 
-            let userMessage = document.createElement("div");
-            userMessage.className = "message";
-            userMessage.innerText = "You: " + input.value;
+        const data = await response.json();
 
-            messages.appendChild(userMessage);
+        loading.remove();
 
-            input.value = "";
-            messages.scrollTop = messages.scrollHeight;
+        if (!response.ok) {
+            throw new Error(data.error || "AI request failed");
         }
-    </script>
 
-</body>
-</html>
+        // Display AI response
+        let aiMessage = document.createElement("div");
+        aiMessage.className = "message";
+        aiMessage.innerText =
+            "Simbi Stella AI: " + data.reply;
+
+        messages.appendChild(aiMessage);
+
+    } catch (error) {
+        loading.innerText =
+            "Error: " + error.message;
+
+        console.error("Chat error:", error);
+    }
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
