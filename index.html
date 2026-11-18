@@ -1,157 +1,316 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simbi Stella AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simbi Stella AI</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 
-        .chat-container {
-            width: 90%;
-            max-width: 700px;
-            height: 80vh;
-            background: #1e293b;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+body{background:#0b0714;color:white;height:100vh;display:flex}
 
-        .header {
-            background: #2563eb;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
+.sidebar{
+width:260px;background:#150d22;padding:22px;
+border-right:1px solid #352044;display:flex;flex-direction:column
+}
 
-        .messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
+.logo{font-size:21px;font-weight:bold;color:#bd83ff;margin-bottom:30px}
 
-        .message {
-            background: #334155;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-        }
+button{cursor:pointer;border:none;border-radius:9px;padding:11px;color:white;background:#8738d4}
 
-        .input-area {
-            display: flex;
-            padding: 15px;
-            background: #0f172a;
-        }
+button:hover{background:#a855f7}
 
-        input {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            outline: none;
-        }
+.newchat{width:100%;margin-bottom:25px}
 
-        button {
-            margin-left: 10px;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 10px;
-            background: #2563eb;
-            color: white;
-            cursor: pointer;
-        }
+.sidebar h4{color:#a99bb8;margin-bottom:12px}
 
-        button:hover {
-            background: #1d4ed8;
-        }
-    </style>
+.history{flex:1;overflow:auto}
+
+.history-item{padding:12px;margin-bottom:5px;background:#21152e;border-radius:8px;font-size:13px;cursor:pointer}
+
+.admin{
+background:#241633;padding:13px;border-radius:10px;
+display:flex;align-items:center;gap:10px
+}
+
+.avatar{background:#8738d4;padding:10px;border-radius:50%}
+
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+
+header{
+height:65px;padding:18px 25px;border-bottom:1px solid #352044;
+display:flex;justify-content:space-between;align-items:center
+}
+
+header strong{color:#bd83ff}
+
+.chat-area{flex:1;overflow-y:auto;padding:25px}
+
+.welcome{text-align:center;margin-top:13vh}
+
+.welcome h1{font-size:34px;margin-bottom:15px}
+
+.welcome span{color:#b56cff}
+
+.welcome p{color:#aaa}
+
+.message{
+max-width:800px;margin:15px auto;padding:15px;
+border-radius:12px;line-height:1.6;white-space:pre-wrap;
+overflow-wrap:anywhere
+}
+
+.user{background:#392052}
+
+.bot{background:#191225;border:1px solid #392052}
+
+.message img{max-width:100%;max-height:300px;border-radius:10px;margin-top:8px}
+
+.input-area{padding:15px}
+
+.input-box{
+max-width:850px;margin:auto;background:#191225;
+border:1px solid #63358a;border-radius:15px;
+display:flex;align-items:center;padding:9px;gap:7px
+}
+
+.input-box input{
+flex:1;min-width:0;background:transparent;border:none;
+outline:none;color:white;padding:10px
+}
+
+.tool{background:#352044;padding:10px;font-size:17px}
+
+.send{padding:11px 15px}
+
+@media(max-width:700px){
+.sidebar{display:none}
+.chat-area{padding:12px}
+.welcome h1{font-size:25px}
+.input-area{padding:8px}
+.tool{padding:8px}
+}
+</style>
 </head>
 
 <body>
 
-    <div class="chat-container">
+<aside class="sidebar">
 
-        <div class="header">
-            🤖 Simbi Stella AI
-        </div>
+<div class="logo">✦ SIMBI STELLA AI</div>
 
-        <div class="messages" id="messages">
-            <div class="message">
-                Hello! 👋 I am Simbi Stella AI. How can I help you?
-            </div>
-        </div>
+<button class="newchat" onclick="newChat()">+ New Chat</button>
 
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Ask Simbi Stella AI...">
-           <button type="button" onclick="sendMessage()">Send</button>
-        </div>
+<h4>CHAT HISTORY</h4>
+<div class="history" id="history"></div>
 
-    </div>
+<div class="admin">
+<div class="avatar">👑</div>
+<div>
+<strong>Simbi Stella</strong>
+<p style="font-size:11px;color:#aaa">Administrator</p>
+</div>
+</div>
 
-    <script>
-        
+</aside>
 
-const input = document.getElementById("userInput");
-const messages = document.getElementById("messages");
+<main class="main">
 
-async function sendMessage() {
-    const message = input.value.trim();
+<header>
+<strong>Simbi Stella AI</strong>
+<button onclick="showProfile()">👤 Profile</button>
+</header>
 
-    if (!message) return;
+<section class="chat-area" id="chatArea">
 
-    // Show user message immediately
-    const userMessage = document.createElement("div");
-    userMessage.className = "message";
-    userMessage.textContent = "You: " + message;
-    messages.appendChild(userMessage);
+<div class="welcome" id="welcome">
+<h1>Welcome to <span>Simbi Stella AI</span></h1>
+<p>Your intelligent AI assistant. Ask me anything!</p>
+</div>
 
-    input.value = "";
-    messages.scrollTop = messages.scrollHeight;
+</section>
 
-    const loading = document.createElement("div");
-    loading.className = "message";
-    loading.textContent = "Simbi Stella AI is thinking...";
-    messages.appendChild(loading);
+<div class="input-area">
 
-    try {
-        const response = await fetch(
-            "https://simbi-stella-ai-backend.onrender.com/chat",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ message })
-            }
-        );
+<div class="input-box">
 
-        const data = await response.json();
+<input type="file" id="imageInput" accept="image/*" hidden onchange="previewImage(event)">
 
-        if (!response.ok) {
-            throw new Error(data.error || "Backend error");
-        }
+<button class="tool" onclick="document.getElementById('imageInput').click()" title="Upload image">📎</button>
 
-        loading.textContent = "Simbi Stella AI: " + data.reply;
+<button class="tool" onclick="startVoice()" title="Voice input">🎤</button>
 
-    } catch (error) {
-        loading.textContent = "Error: " + error.message;
-        console.error(error);
-    }
+<input id="userInput" placeholder="Message Simbi Stella AI..."
+onkeydown="if(event.key==='Enter')sendMessage()">
 
-    messages.scrollTop = messages.scrollHeight;
+<button class="send" onclick="sendMessage()">➤</button>
+
+</div>
+
+<div id="preview" style="text-align:center;color:#aaa;font-size:12px;margin-top:7px"></div>
+
+</div>
+
+</main>
+
+<script>
+
+let selectedImage = null;
+let conversations = [];
+let currentMessages = [];
+
+function addMessage(text,sender,image=null){
+
+document.getElementById("welcome").style.display="none";
+
+const area=document.getElementById("chatArea");
+const msg=document.createElement("div");
+
+msg.className="message "+sender;
+msg.textContent=text;
+
+if(image){
+const img=document.createElement("img");
+img.src=image;
+msg.appendChild(document.createElement("br"));
+msg.appendChild(img);
 }
+
+area.appendChild(msg);
+area.scrollTop=area.scrollHeight;
+
+return msg;
+}
+
+function previewImage(event){
+
+const file=event.target.files[0];
+if(!file)return;
+
+if(!file.type.startsWith("image/")){
+alert("Please select an image.");
+return;
+}
+
+if(file.size>5*1024*1024){
+alert("Image must be smaller than 5MB.");
+return;
+}
+
+const reader=new FileReader();
+
+reader.onload=()=>{
+selectedImage=reader.result;
+document.getElementById("preview").textContent="Image selected: "+file.name;
+};
+
+reader.readAsDataURL(file);
+}
+
+async function sendMessage(){
+
+const input=document.getElementById("userInput");
+const text=input.value.trim();
+
+if(!text&&!selectedImage)return;
+
+addMessage(text||"Please describe this image.", "user",selectedImage);
+
+currentMessages.push({role:"user",text});
+
+const imageToSend=selectedImage;
+selectedImage=null;
+document.getElementById("preview").textContent="";
+document.getElementById("imageInput").value="";
+input.value="";
+
+const loading=addMessage("Simbi Stella AI is typing...","bot");
+
+try{
+
+const response=await fetch("/api/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+message:text,
+image:imageToSend
+})
+});
+
+if(!response.ok)throw new Error("Server error");
+
+const data=await response.json();
+
+const reply=data.reply||data.response||"No response received.";
+
+loading.textContent=reply;
+
+currentMessages.push({role:"assistant",text:reply});
+
+saveHistory(text||"Image conversation");
+
+}catch(error){
+
+loading.textContent="Connection error. Please try again.";
+console.error(error);
+
+}
+
+}
+
+function saveHistory(title){
+
+const history=document.getElementById("history");
+const item=document.createElement("div");
+
+item.className="history-item";
+item.textContent="💬 "+title.substring(0,28);
+
+history.prepend(item);
+
+}
+
+function newChat(){
+
+document.getElementById("chatArea").innerHTML=`
+<div class="welcome" id="welcome">
+<h1>Welcome to <span>Simbi Stella AI</span></h1>
+<p>Your intelligent AI assistant. Ask me anything!</p>
+</div>`;
+
+currentMessages=[];
+
+}
+
+function startVoice(){
+
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+alert("Voice input is not supported in this browser.");
+return;
+}
+
+const recognition=new SpeechRecognition();
+recognition.lang="en-US";
+recognition.start();
+
+recognition.onresult=(event)=>{
+document.getElementById("userInput").value=
+event.results[0][0].transcript;
+};
+
+}
+
+function showProfile(){
+
+alert("Admin Profile\nUsername: Simbi Stella\nEmail: simbistella148@gmail.com");
+
+}
+
 </script>
+
 </body>
 </html>
